@@ -1,0 +1,133 @@
+      <!DOCTYPE html>
+<html>
+  <head>
+  </head>
+  <body>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script>
+            
+      const R = 80;
+      const DW = 500;
+      const DH = 350;
+      const OFFX = DW/2;
+      const OFFY = DH/2;
+      
+      function gridData() {
+	var data = new Array();
+	var xpos = 0;
+	var ypos = 0;
+	var width = 2*R - 1;
+	var height = R/3;
+	var click = 0;
+	
+	// iterate for rows	
+	for (var row = 0; row < 6; row++) {
+		data.push( new Array() );
+		
+		// iterate for cells/columns inside rows
+		for (var column = 0; column < 1; column++) {
+			data[row].push({
+				x: xpos,
+				y: ypos,
+				width: width,
+				height: height,
+				click: click
+			})
+			// increment the x position. I.e. move it over by 50 (width variable)
+			xpos += width;
+		}
+		// reset the x position after a row is complete
+		xpos = 1;
+		// increment the y position for the next row. Move it down 50 (height variable)
+		ypos += height;	
+	}
+	return data;
+};
+
+var gridData = gridData();	
+console.log(gridData);
+
+      var drag = d3.behavior.drag()
+      .on("drag", function(d,i) {
+        d.x += d3.event.dx
+        d.y += d3.event.dy
+        d3.select(this).attr("transform", function(d,i){
+          return "translate(" + [ d.x,d.y ] + ")"
+        })
+      });
+      
+
+      
+      var svg = d3.select('body')
+        .append('svg')
+        .attr("id", "desk")
+        .attr("width", DW)
+        .attr("height", DH)
+      ;
+      
+
+      
+     var pool =  svg.append("g")
+       .attr("transform", "translate(" + OFFX + "," + OFFY + ")")
+       .data([ {"x":OFFX, "y":OFFY} ])
+       .attr("class", "blob")
+       .call(drag)
+     ;
+      
+       var rct = pool.append("rect")
+      .attr("class", "re")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 2*R)
+      .attr("height",2*R)
+      .attr("transform", "translate(" + [-R, -R] + ")")
+      .style("fill", "AntiqueWhite")
+	  .style("stroke", "Brown")
+
+      var adat = pool.append("rect")
+      .attr("class", "row")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", 2*R)
+      .attr("height",R/3)
+      .attr("transform", "translate(" + [-R, -R] + ")")
+      .attr("stroke", "Crimson")
+      .attr("fill", "DarkSeaGreen")
+      .attr("stroke-width", 1)
+
+      ;
+       
+
+     ;
+      var text = pool.append("text")
+      .text("Compree")
+      .attr("y", ".5em")
+      .attr("transform", "translate(" + [0, -R + 10] + ")")
+      .attr("text-anchor", "middle")
+      .attr("font-weight", 700)
+      .attr("font-family", "Helvetica")
+      .attr("fill", "darkblue")
+      .attr("stroke", "none")
+      .attr("pointer-events", "none") 
+      ;
+      
+      var row = pool.selectAll(".row")
+	.data(gridData)
+	.enter().append("g")
+	.attr("class", "row");
+      
+    var column = row.selectAll(".square")
+	.data(function(d) { return d; })
+	.enter().append("rect")
+	.attr("class","square")
+    .attr("transform", "translate(" + [-R, -R ] + ")")
+
+	.attr("x", function(d) { return d.x; })
+	.attr("y", function(d) { return d.y; })
+	.attr("width", function(d) { return d.width; })
+	.attr("height", function(d) { return d.height; })
+	.style("fill", "#fff")
+	.style("stroke", "#222")  
+    </script>
+  </body>
+</html>
